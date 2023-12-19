@@ -87,8 +87,8 @@ async function Pagenation(){
   const spreadsheetId = '1YxcrNipNI3l8GWzz-p8mb4-IUvmmAg7f2ZyyDaAxSIU'; // Your Spreadsheet ID
   const urls = await fetchSheetData(spreadsheetId);
   const browser = await openBrowser();
-for (let i = 0; i<urls.length; i++){
-  console.log("Opening url: ", urls[i]);
+for (let i = 109; i<urls.length; i++){
+  console.log("Opening url: ", urls[i], i);
   const page = await openNewPage(urls[i], browser);
   const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
   await clickElement(editButton);
@@ -107,6 +107,7 @@ for (let i = 0; i<urls.length; i++){
   const navigationPromise = page.waitForNavigation()
   await clickElement(saveButton);
   await navigationPromise;
+  await delay(2000);
   await page.close();
   
   console.log(`${urls[i]} modified successfully!`);
