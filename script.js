@@ -29,7 +29,7 @@ async function main(){
   async function openNewPage(url, browser){
     try{
       const page = await browser.newPage();
-      await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.goto(url, { waitUntil: 'load' });
       return page;
     }catch(error){
       console.log(error);
@@ -54,6 +54,7 @@ async function main(){
 
   //
   async function clickElement(element){
+    console.log(element);
     if(element){
       await element.click();
     }else{
@@ -84,13 +85,14 @@ async function main(){
     }
   }  
 async function Pagenation(){
-  const spreadsheetId = '1YxcrNipNI3l8GWzz-p8mb4-IUvmmAg7f2ZyyDaAxSIU'; // Your Spreadsheet ID
+  const spreadsheetId = '1AjhMb9FV2puTMoPXQtNfdB2QD__j3pTWnpYgJCcU55o'; // Your Spreadsheet ID
   const urls = await fetchSheetData(spreadsheetId);
   const browser = await openBrowser();
-for (let i = 109; i<urls.length; i++){
+  for (let i = 0; i < urls.length; i++){
   console.log("Opening url: ", urls[i], i);
   const page = await openNewPage(urls[i], browser);
   const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
+  console.log(editButton);
   await clickElement(editButton);
   await page.waitForXPath("//div[@id='yoast-google-preview-description-metabox']", { visible: true });
   console.log("loaded");
@@ -115,19 +117,9 @@ for (let i = 109; i<urls.length; i++){
   
 Pagenation().catch(console.error);
 
-//Успешно добави на БГ. #провери и другите за 
-
-
-
-
-
-
-
-
-
-
-
-  
 }
+
+
+
 main().catch(console.error);
 
