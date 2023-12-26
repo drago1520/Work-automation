@@ -25,13 +25,14 @@ async function main(){
     
     try {
       response = await axios.get(apiUrl);
-      
+
       //flatArrayURL = response.data.values.flat();
       
     } catch (error) {
       console.error(`Error fetching data: ${error}`);
     }
-    return response.data.value;
+    const sheet2D = response.data.values;
+    return sheet2D;
   }
   //
   async function openNewPage(url, browser){
@@ -65,7 +66,7 @@ async function main(){
 
   //
   async function clickElement(element){
-    console.log(element);
+   
     if(element){
       await element.click();
     }else{
@@ -97,34 +98,45 @@ async function main(){
 async function Pagenation(){
   const spreadsheetId = '1AjhMb9FV2puTMoPXQtNfdB2QD__j3pTWnpYgJCcU55o'; // Your Spreadsheet ID
   const sheetData = await fetchSheetData2D(spreadsheetId);
-  console.log(sheetData);
+  let urls = [];
+  let charCount = [];
   for (let i = 0; i < sheetData.length; i++) {
-    console.log(sheetData[i]);
+    urls.push(sheetData[i][0]);
+    charCount.push(sheetData[i][2]);
+    
   }
-  const urls = sheetData;
   const browser = await openBrowser();
   for (let i = 0; i < urls.length; i++){
   console.log("Opening url: ", urls[i], i);
+  console.log("charCount: ", charCount[i]);
   const page = await openNewPage(urls[i], browser);
   const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
-  console.log(editButton);
   await clickElement(editButton);
   await page.waitForXPath("//div[@id='yoast-google-preview-description-metabox']", { visible: true });
   console.log("loaded");
   const metaDescriptionBox = await selectXpath("//div[@id='yoast-google-preview-description-metabox']", page);
   await metaDescriptionBox.focus();
-  
-  // const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
-  // //Just to check.
-  // await delay(4000);
+  let textInput = "";
+  if (charCount[i] < 51 && charCount[i] > 0){
+    textInput = "%%title%% в онлайн магазин %%sitename%%   Поръчайте със 100% дискретна експресна доставка. Въображението ви е границата! ❤️ %%page%%"
+  }else if(charCount[i] < 82 && charCount[i] > 50){
+    textInput = "%%title%% в онлайн магазин %%sitename%%  Поръчайте сега със 100% дискретна експресна доставка. ❤️  %%page%%"
+  }else if (charCount[i] < 106 && charCount[i] > 81){
+    textInput = "%%title%% в онлайн магазин %%sitename%%   100% дискретна доставка. ❤️%%page%%"
+  }else{console.log("error")};
+ 
+  await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
+  const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
+  //Just to check.
+  await delay(4000);
   // const navigationPromise = page.waitForNavigation()
   // await clickElement(saveButton);
   // await navigationPromise;
-  await delay(2999000);
-  //await page.close();
+  await page.close();
   
   console.log(`${urls[i]} modified successfully!`);
-  }}
+  }
+}
   
 Pagenation().catch(console.error);
 
