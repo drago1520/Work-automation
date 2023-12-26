@@ -105,7 +105,7 @@ async function Pagenation(){
     charCount.push(sheetData[i][2]);
     
   }
-  //await delay(300000);
+  await delay(300000);
   const browser = await openBrowser();
   for (let i = 0; i < urls.length; i++){
   console.log("Opening url: ", urls[i], i);
