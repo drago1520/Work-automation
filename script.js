@@ -105,6 +105,7 @@ async function Pagenation(){
     charCount.push(sheetData[i][2]);
     
   }
+  //await delay(300000);
   const browser = await openBrowser();
   for (let i = 0; i < urls.length; i++){
   console.log("Opening url: ", urls[i], i);
@@ -129,9 +130,19 @@ async function Pagenation(){
   const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
   //Just to check.
   await delay(4000);
-  // const navigationPromise = page.waitForNavigation()
-  // await clickElement(saveButton);
-  // await navigationPromise;
+  const navigationPromise = page.waitForNavigation()
+  const progressBar = await selectXpath("//progress[@max='156']", page);
+  const valueProgressBar = await page.evaluate(el => el.getAttribute('value'), progressBar);
+  if(valueProgressBar >= 120 && valueProgressBar <= 156){
+    // await clickElement(saveButton);
+    console.log("progressBar: ", valueProgressBar);
+  }else{
+    throw new Error(`Error: the meta description is ${valueProgressBar} characters long. It is not within limits at ${urls[i]}${i}`);
+  }
+
+
+  
+  await navigationPromise;
   await page.close();
   
   console.log(`${urls[i]} modified successfully!`);
