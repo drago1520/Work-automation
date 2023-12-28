@@ -68,8 +68,9 @@ async function Pagenation(){
   console.log("charCount: ", charCount[i]);
   const page = await openNewPage(urls[i], browser);
   const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
+  const navigationPromise = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
   await clickElement(editButton);
-  await page.waitForXPath("//div[@id='yoast-google-preview-description-metabox']", { visible: true });
+  await navigationPromise;
   console.log("loaded");
   const metaDescriptionBox = await selectXpath("//div[@id='yoast-google-preview-description-metabox']", page);
   await metaDescriptionBox.focus();
