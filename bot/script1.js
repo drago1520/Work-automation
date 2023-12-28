@@ -68,12 +68,15 @@ async function Pagenation(){
   console.log("charCount: ", charCount[i]);
   const page = await openNewPage(urls[i], browser);
   const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
-  const navigationPromise = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
+  const navigationPromise1 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
   await clickElement(editButton);
-  await navigationPromise;
+  await navigationPromise1;
   console.log("loaded");
   const metaDescriptionBox = await selectXpath("//div[@id='yoast-google-preview-description-metabox']", page);
   await metaDescriptionBox.focus();
+  const progressBar = await selectXpath("//progress[@max='156']", page);
+  let valueProgressBarString = await page.evaluate(el => el.getAttribute('value'), progressBar);
+  const valueProgressBar = parseInt(valueProgressBarString, 10);
   let textInput = "";
   if (charCount[i] < 51 && charCount[i] > 0){
     textInput = "%%title%% в онлайн магазин %%sitename%%   Поръчайте със 100% дискретна експресна доставка. Въображението ви е границата! ❤️ %%page%%"
@@ -83,29 +86,37 @@ async function Pagenation(){
     textInput = "%%title%% в онлайн магазин %%sitename%%   100% дискретна доставка. ❤️%%page%%"
   }else{console.log("error")};
  
-  await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
-  //Не намира елемента
-  //const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
+  
+  const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
   //Just to check.
-  await delay(4000);
-  //const navigationPromise = page.waitForNavigation()
-  const progressBar = await selectXpath("//progress[@max='156']", page);
-  let valueProgressBarString = await page.evaluate(el => el.getAttribute('value'), progressBar);
-  const valueProgressBar = parseInt(valueProgressBarString, 10);
+  await delay(1000);
+  const navigationPromise2 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
+  
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
-    // await clickElement(saveButton);
+    
     console.log(`Progress bar: ${valueProgressBar} with page: ${urls[i].includes("/page/")}`);
     fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n`, function (err) {
       console.log(err);
     })
+    await clickElement(saveButton);
+    await navigationPromise2;
      //const navigationPromise = page.waitForNavigation()
     //const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
     //await clickElement(saveButton);
     //await navigationPromise;
 
-  }else{
+  }else if(valueProgressBar > 156){
     console.log("long description!");
-    fs.appendFile("../readyMeta.txt", `${urls[i]}\n`, function (err) {
+    fs.appendFileSync("../readyMeta.txt", `${urls[i]}\n`, function (err) {
+      if (err) throw err;
+    });
+    await clickElement(saveButton);
+    await navigationPromise2;
+  }else if (valueProgressBar == 0){
+    await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
+  }else{
+    console.log("WTF??!");
+    fs.appendFileSync("../checkIt.txt", `${urls[i]} is bugged. \n`, function (err) {
       if (err) throw err;
     });
   }

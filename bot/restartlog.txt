@@ -1,0 +1,2 @@
+node script1.js 1 50 
+node script1.js 0 50 
