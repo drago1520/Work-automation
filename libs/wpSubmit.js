@@ -9,6 +9,9 @@ import delay from "./delay.js";
 export default async function wpSubmit(page){
   const navigationPromise = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
   await delay(2000);
+  await page.evaluate(() => {
+    window.scrollBy(0, 20); // Scrolls down 20 pixels
+  });
   let saveButton = await selectXpathNoWait("//input[@type='submit' and @name='save' and @id='publish']", page);
   if(!saveButton){
     console.log("Trying variant 2...");
@@ -23,6 +26,8 @@ export default async function wpSubmit(page){
       }else if (!saveButton){
         console.log("Button 3 not found!");
       }
+    }else{
+      console.log("WTF??!");
     }
   }
   else if(saveButton){
