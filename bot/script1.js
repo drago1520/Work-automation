@@ -103,6 +103,9 @@ async function Pagenation(){
     await wpSubmit(page);
   }else if (valueProgressBar == 0){
     await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
+    fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n`, function (err) {
+      console.log(err);
+    })
     await wpSubmit(page);
   }else{
     console.log("WTF??!");
