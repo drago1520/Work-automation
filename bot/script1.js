@@ -10,29 +10,29 @@ import delay from "../libs/delay.js";
 import openBrowser from "../libs/openBrowser.js";
 import fs from "fs";
 import path from "path";
+import selectXpathNoWait from "../libs/selectXpathNoWait.js";
+let index;
+let end;
 
+async function RestartLog(firstUrlIndex, lastUrlIndex){
+  async function getScriptName(){
+    // Get the full path of the script
+  const fullPath = process.argv[1];
 
+// Get just the file name with extension
+  const fileNameWithExtension = path.basename(fullPath);
+    return fileNameWithExtension;
+  }
+  let fileName = "restartLog.txt";
+  const scriptName = await getScriptName();
+  fs.appendFile(fileName,  `node ${scriptName} ${firstUrlIndex} ${lastUrlIndex} \n`, function(err) {
+    if (err) throw err;
+    console.log('Saved!');
+});
+}
 async function main(){
   
-
-  async function RestartLog(firstUrlIndex, lastUrlIndex){
-    async function getScriptName(){
-      // Get the full path of the script
-    const fullPath = process.argv[1];
   
-  // Get just the file name with extension
-    const fileNameWithExtension = path.basename(fullPath);
-      return fileNameWithExtension;
-    }
-    let fileName = "restartLog.txt";
-    const scriptName = await getScriptName();
-    fs.appendFile(fileName,  `node ${scriptName} ${firstUrlIndex} ${lastUrlIndex} \n`, function(err) {
-      if (err) throw err;
-      console.log('Saved!');
-  });
-  }
-  let index;
-  let end;
   process.on('SIGINT', async function() {
     await RestartLog(index, end);
     console.log("Program terminated - log file created.");
@@ -86,11 +86,19 @@ async function Pagenation(){
     textInput = "%%title%% в онлайн магазин %%sitename%%   100% дискретна доставка. ❤️%%page%%"
   }else{console.log("error")};
  
-  
-  const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
-  //Just to check.
-  await delay(1000);
   const navigationPromise2 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
+  
+  //Just to check.
+  await delay(2000);
+  let saveButton;
+  saveButton = await selectXpathNoWait("//input[@type='submit' and @name='save' and @id='publish']", page);
+  if(!saveButton){
+    console.log("Button variant 1 NOT found!");
+    console.log("Trying variant 2...");
+    saveButton = await selectXpathNoWait("//div[@class='edit-tag-actions']/input[@type='submit']", page);
+  }else{
+    console.log("Button variant 1 and 2 found!");
+  }
   
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
     
@@ -100,10 +108,6 @@ async function Pagenation(){
     })
     await clickElement(saveButton);
     await navigationPromise2;
-     //const navigationPromise = page.waitForNavigation()
-    //const saveButton = await selectXpath("//div[@class='edit-tag-actions']/input[@type='submit']", page);
-    //await clickElement(saveButton);
-    //await navigationPromise;
 
   }else if(valueProgressBar > 156){
     console.log("long description!");
@@ -114,6 +118,8 @@ async function Pagenation(){
     await navigationPromise2;
   }else if (valueProgressBar == 0){
     await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
+    await clickElement(saveButton);
+    await navigationPromise2;
   }else{
     console.log("WTF??!");
     fs.appendFileSync("../checkIt.txt", `${urls[i]} is bugged. \n`, function (err) {
@@ -140,5 +146,8 @@ Pagenation().catch((e)=>{
 
 
 
-main().catch(console.error);
+main().catch((e)=>{
+  console.log(e);
+  RestartLog(index, end);
+});
 

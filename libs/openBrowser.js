@@ -4,8 +4,7 @@ puppeteer.use(StealthPlugin());
 
 export default async function openBrowser(){
   try{
-    const exePath = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-    const browser = await puppeteer.launch({headless: "new", executablePath: exePath});
+    const browser = await puppeteer.launch({headless: false});
     
     return browser;
   }catch(e){
