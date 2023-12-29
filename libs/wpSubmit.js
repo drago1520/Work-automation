@@ -15,10 +15,17 @@ export default async function wpSubmit(page){
     saveButton = await selectXpathNoWait("//div[@class='edit-tag-actions']/input[@type='submit']", page);
     if(saveButton){
       console.log("Button variant 2 found!");
+    }else if(!saveButton){
+      console.log("Trying variant 3...");
+      saveButton = await selectXpathNoWait("//input[@type='submit' and @name='publish' and @id='publish']", page);
+      if (saveButton) {
+        console.log("Button variant 3 found!");
+      }else if (!saveButton){
+        console.log("Button 3 not found!");
+      }
     }
-  }else if(!saveButton){
-    console.log("Button variant 1 and 2 NOT found!");
-  }else if(saveButton){
+  }
+  else if(saveButton){
     
   }
   //bug - submit button hides when scrolling up??!

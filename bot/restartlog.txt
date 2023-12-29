@@ -8,3 +8,4 @@ node script1.js 53 144
 node script1.js 443 576 
 node script1.js 444 576 
 node script1.js 443 576 
+node script1.js 295 432 
