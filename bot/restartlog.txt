@@ -12,3 +12,6 @@ node script1.js 0 144
 node script1.js 0 144 
 node script1.js 0 144 
 node script1.js 0 144 
+node script1.js 144 288 
+node script1.js 0 144 
+node script1.js 288 432 

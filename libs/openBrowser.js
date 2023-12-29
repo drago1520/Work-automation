@@ -4,7 +4,7 @@ puppeteer.use(StealthPlugin());
 
 export default async function openBrowser(){
   try{
-    const browser = await puppeteer.launch({headless: false});
+    const browser = await puppeteer.launch({headless: "new"});
     
     return browser;
   }catch(e){

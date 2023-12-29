@@ -93,11 +93,15 @@ async function Pagenation(){
   let saveButton;
   saveButton = await selectXpathNoWait("//input[@type='submit' and @name='save' and @id='publish']", page);
   if(!saveButton){
-    console.log("Button variant 1 NOT found!");
     console.log("Trying variant 2...");
     saveButton = await selectXpathNoWait("//div[@class='edit-tag-actions']/input[@type='submit']", page);
-  }else{
-    console.log("Button variant 1 and 2 found!");
+    if(saveButton){
+      console.log("Button variant 2 found!");
+    }
+  }else if(!saveButton){
+    console.log("Button variant 1 and 2 NOT found!");
+  }else if(saveButton){
+    console.log("Button found!");
   }
   
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
