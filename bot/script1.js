@@ -11,6 +11,7 @@ import openBrowser from "../libs/openBrowser.js";
 import fs from "fs";
 import path from "path";
 import selectXpathNoWait from "../libs/selectXpathNoWait.js";
+import wpSubmit from "../libs/wpSubmit.js";
 let index;
 let end;
 
@@ -85,24 +86,6 @@ async function Pagenation(){
   }else if (charCount[i] < 106 && charCount[i] > 81){
     textInput = "%%title%% в онлайн магазин %%sitename%%   100% дискретна доставка. ❤️%%page%%"
   }else{console.log("error")};
- 
-  const navigationPromise2 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
-  
-  //Just to check.
-  await delay(2000);
-  let saveButton;
-  saveButton = await selectXpathNoWait("//input[@type='submit' and @name='save' and @id='publish']", page);
-  if(!saveButton){
-    console.log("Trying variant 2...");
-    saveButton = await selectXpathNoWait("//div[@class='edit-tag-actions']/input[@type='submit']", page);
-    if(saveButton){
-      console.log("Button variant 2 found!");
-    }
-  }else if(!saveButton){
-    console.log("Button variant 1 and 2 NOT found!");
-  }else if(saveButton){
-    console.log("Button found!");
-  }
   
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
     
@@ -110,20 +93,17 @@ async function Pagenation(){
     fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n`, function (err) {
       console.log(err);
     })
-    await clickElement(saveButton);
-    await navigationPromise2;
+    await wpSubmit(page);
 
   }else if(valueProgressBar > 156){
     console.log("long description!");
-    fs.appendFileSync("../readyMeta.txt", `${urls[i]}\n`, function (err) {
+    fs.appendFileSync("../errorMeta.txt", `${urls[i]}\n`, function (err) {
       if (err) throw err;
     });
-    await clickElement(saveButton);
-    await navigationPromise2;
+    await wpSubmit(page);
   }else if (valueProgressBar == 0){
     await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
-    await clickElement(saveButton);
-    await navigationPromise2;
+    await wpSubmit(page);
   }else{
     console.log("WTF??!");
     fs.appendFileSync("../checkIt.txt", `${urls[i]} is bugged. \n`, function (err) {
