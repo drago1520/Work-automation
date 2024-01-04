@@ -84,19 +84,31 @@ async function Pagenation(){
   await clickEditWP(page);
   await focusMetaDescriptionBox(page);
   let valueProgressBar = await getCurrentProgressBarValue(page);
+  let formula = "";
   let textInput = "";
-  if (charCount[i] < 51 && charCount[i] > 0){
-    textInput = "%%title%% в онлайн магазин %%sitename%%   Поръчайте със 100% дискретна експресна доставка. Въображението ви е границата! ❤️ %%page%%"
-  }else if(charCount[i] < 82 && charCount[i] > 50){
-    textInput = "%%title%% в онлайн магазин %%sitename%%  Поръчайте сега със 100% дискретна експресна доставка. ❤️  %%page%%"
-  }else if (charCount[i] < 106 && charCount[i] > 81){
-    textInput = "%%title%% в онлайн магазин %%sitename%%   100% дискретна доставка. ❤️%%page%%"
+  if (charCount[i] <= 53 && charCount[i] >= 22){
+    formula = "%%title%% в {онлайн магазин| уеб магазина на|дигитален магазин|е-магазина на} %%sitename%% {Поръчайте със 100% дискретна експресна доставка|Купете с напълно конфиденциална бърза доставка|Заявете днес с изцяло дискретна бърза доставка}. {Границата е само въображението|Няма граници в избора при нас|Не може дори да си представите}! {❤️|💖|❣️} %%page%%"
+  }else if(charCount[i] <= 80 && charCount[i] >= 54){
+    formula = "%%title%% в {онлайн магазин| уеб магазина на|дигитален магазин|е-магазина на} %%sitename%% {Поръчайте лесно с 100% дискретна експресна доставка|Купете сега с напълно конфиденциална бърза доставка|Заявете днес с изцяло поверителна бърза доставка}! {❤️|💖|❣️} %%page%%"
+  }else if (charCount[i] <= 106 && charCount[i] >= 80){
+    formula = "%%title%% в {онлайн магазин|уеб магазина|онлайн секс шоп|е-магазина на} %%sitename%% {100% дискретна доставка|Конфиденциална доставка|Поверителна бърза доставка}! {❤️|💖|❣️} %%page%%"
   }else{console.log("error")};
-  
-  let proofModifiedScript = selectXpathNoWait("//div[@id='yoast-google-preview-description-metabox' and @contenteditable='true']//span[@data-text='true' and contains(text(), 'Страница')]", page);
+    textInput = parseSpintax(formula);
+
+
+  //Checks if it already has the old shitty meta descr.
+  let proofModifiedScript = await selectXpathNoWait("//div[@id='yoast-google-preview-description-metabox' and @contenteditable='true']//span[@data-text='true' and contains(text(), 'Страница')]", page);
   if (proofModifiedScript){
-    console.log("needs to be modified");
+    fs.appendFileSync("./modified.txt", `${urls[i]}\n`, function (err) {
+      console.log(err);
+    });
+    await focusMetaDescriptionBox(page);
+    await page.keyboard.down('Control'); // 'Command' on macOS
+    await page.keyboard.press('A');      // Select all text
+    await page.keyboard.up('Control');   // 'Command' on macOS
+    await page.keyboard.press('Backspace'); // Delete the text
   }
+
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
     
     console.log(`Progress bar: ${valueProgressBar} with page: ${urls[i].includes("/page/")}`);

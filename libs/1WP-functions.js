@@ -149,6 +149,29 @@ async function clickEditWP(page) {
  await navigationPromise1;
  console.log("loaded");
 }
+async function focusMetaDescriptionBox(page){
+  const metaDescriptionBox = await selectXpath("//div[@id='yoast-google-preview-description-metabox']", page);
+  await metaDescriptionBox.focus();
+}
+//let valueProgressBar = await getCurrentProgressBarValue(page);
+async function getCurrentProgressBarValue(page){
+  const progressBar = await selectXpath("//progress[@max='156']", page);
+  let valueProgressBarString = await page.evaluate(el => el.getAttribute('value'), progressBar);
+  const valueProgressBar = parseInt(valueProgressBarString, 10);
+  return valueProgressBar;
+}
+//crashLog(index, end);
+async function crashLog(index, end){
+  process.on('SIGINT', async function() {
+    await RestartLog(index, end);
+    console.log("Program terminated - log file created.");
+    // Gracefully shut down anything else you need to here
+    await delay(3000);
+    console.log("delayed successfully!  Terminating.");
+    process.exit(); // This will terminate the application
+  
+});
+}
 
 // Single-line export statement
-export { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP };
+export { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP, focusMetaDescriptionBox, getCurrentProgressBarValue, crashLog };

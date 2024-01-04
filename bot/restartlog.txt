@@ -2,3 +2,5 @@ node script1.js 0 10
 node script1.js 0 10 
 node script1.js 0 10 
 node script1.js 3 10 
+node script1.js 1 10 
+node script1.js 0 10 
