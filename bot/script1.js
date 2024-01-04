@@ -12,6 +12,7 @@ import fs from "fs";
 import path from "path";
 import selectXpathNoWait from "../libs/selectXpathNoWait.js";
 import wpSubmit from "../libs/wpSubmit.js";
+import clickEditWP from "../libs/clickEditWP.js";
 let index;
 let end;
 
@@ -45,6 +46,7 @@ function parseSpintax(spintax) {
 function countCharacters(text) {
   return text.length;
 }
+
 async function main(){
   
   
@@ -57,6 +59,7 @@ async function main(){
     process.exit(); // This will terminate the application
   
 });
+
 async function Pagenation(){
   const spreadsheetId = '1AjhMb9FV2puTMoPXQtNfdB2QD__j3pTWnpYgJCcU55o'; // Your Spreadsheet ID
   const sheetData = await fetchSheetData2D(spreadsheetId);
@@ -82,11 +85,12 @@ async function Pagenation(){
   console.log("Opening url: ", urls[i], i);
   console.log("charCount: ", charCount[i]);
   const page = await openNewPage(urls[i], browser);
-  const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
-  const navigationPromise1 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
-  await clickElement(editButton);
-  await navigationPromise1;
-  console.log("loaded");
+  // const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
+  // const navigationPromise1 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
+  // await clickElement(editButton);
+  // await navigationPromise1;
+  // console.log("loaded");
+  await clickEditWP(urls[i], page);
   const metaDescriptionBox = await selectXpath("//div[@id='yoast-google-preview-description-metabox']", page);
   await metaDescriptionBox.focus();
   const progressBar = await selectXpath("//progress[@max='156']", page);
