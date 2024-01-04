@@ -83,7 +83,7 @@ async function Pagenation(){
   const page = await openNewPage(urls[i], browser);
   await clickEditWP(page);
   await focusMetaDescriptionBox(page);
-  let valueProgressBar = await getCurrentProgressBarValue(page);
+  
   let formula = "";
   let textInput = "";
   if (charCount[i] <= 53 && charCount[i] >= 22){
@@ -107,8 +107,9 @@ async function Pagenation(){
     await page.keyboard.press('A');      // Select all text
     await page.keyboard.up('Control');   // 'Command' on macOS
     await page.keyboard.press('Backspace'); // Delete the text
+    await delay(1000);
   }
-
+  let valueProgressBar = await getCurrentProgressBarValue(page);
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
     
     console.log(`Progress bar: ${valueProgressBar} with page: ${urls[i].includes("/page/")}`);
@@ -125,7 +126,7 @@ async function Pagenation(){
     await wpSubmit(page);
   }else if (valueProgressBar == 0){
     await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
-    fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n`, function (err) {
+    fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n ${textInput}\n`, function (err) {
       console.log(err);
     })
     await wpSubmit(page);

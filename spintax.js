@@ -24,6 +24,7 @@ function findMinMax(spintax, iterations) {
     for (let i = 0; i < iterations; i++) {
         tempResult = parseSpintax(spintax);
         tempLength = countCharacters(tempResult);
+        console.log(tempResult, tempLength);
         
         if (tempLength < minLength) {
             minLength = tempLength;
@@ -46,7 +47,8 @@ let spintaxL = "%%title%% в {онлайн магазин|уеб магазин�
 
 let spintaxFinal = spintaxS;
 
-let minMax = findMinMax(spintaxFinal, 10000);
+let minMax = findMinMax(spintaxFinal, 10);
+
 console.log(`Minimum length: ${minMax.minLength}`);
 console.log(`Maximum length: ${minMax.maxLength}`);
 console.log(`Shortest result:${minMax.shortest}`);
