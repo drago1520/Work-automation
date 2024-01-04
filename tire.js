@@ -3,43 +3,12 @@ function replaceSpacesWithHyphens(str) {
 }
 
 
-  
-const bulgarianCities = [
-  "Дюны",
-  "Албена",
-  "Синеморец",
-  "Ахтополь",
-  "Царево",
-  "Лозенец",
-  "Китен",
-  "Приморско",
-  "Созополь",
-  "белый",
-  "Св. Св. Константин и Елена",
-  "Золотые Пески",
-  "Варна",
-  "Обзор",
-  "Елените",
-  "Святой Влас",
-  "Солнечный Берег",
-  "Несебр",
-  "Равда",
-  "Ахелой",
-  "Бургас",
-  "Поморие",
-  "Черноморец"
-];
-
-
-
-for (let i=0; i < bulgarianCities.length; i++) {
   // Example usage
-  let phrase = bulgarianCities[i];
-  //let phrase = `Трансфер из ${bulgarianCities[i]} в Стамбул цена`;
+  let phrase = `Трансфер из ${bulgarianCities[i]} в Стамбул цена`;
   console.log(phrase);
-  //console.log(replaceSpacesWithHyphens(transliterateBulgarian(phrase)));
-  //console.log("\n");
-}
+  console.log(replaceSpacesWithHyphens(transliterateBulgarian(phrase)));
+  console.log("\n");
+
 
   
 

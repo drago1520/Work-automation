@@ -1,2 +1,4 @@
 node script1.js 521 576 
 node script1.js 714 715 
+node script1.js undefined 288 
+node checkMeta.js 714 715 

@@ -89,10 +89,24 @@ async function Pagenation(){
   
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
     
-    console.log(`nice. ${i}`);
+    console.log(`Progress bar: ${valueProgressBar} with page: ${urls[i].includes("/page/")}`);
     fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n`, function (err) {
       console.log(err);
+    })
+    await wpSubmit(page);
+
+  }else if(valueProgressBar > 156){
+    console.log("long description!");
+    fs.appendFileSync("../errorMeta.txt", `${urls[i]}\n`, function (err) {
+      if (err) throw err;
     });
+    await wpSubmit(page);
+  }else if (valueProgressBar == 0){
+    await page.type("#yoast-google-preview-description-metabox", textInput, {delay: 10});
+    fs.appendFileSync("../readyURLs.txt", `${urls[i]}\n`, function (err) {
+      console.log(err);
+    })
+    await wpSubmit(page);
   }else{
     console.log("WTF??!");
     fs.appendFileSync("../checkIt.txt", `${urls[i]} is bugged. \n`, function (err) {
@@ -101,7 +115,7 @@ async function Pagenation(){
   }
   
 
-  await delay(1000);
+  await delay(4000);
   
   //await navigationPromise;
   await page.close();

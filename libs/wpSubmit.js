@@ -24,7 +24,13 @@ export default async function wpSubmit(page){
       if (saveButton) {
         console.log("Button variant 3 found!");
       }else if (!saveButton){
-        console.log("Button 3 not found!");
+        console.log("Trying variant 4...");
+        saveButton = await selectXpathNoWait("//button[@type='button' and contains(@class, 'components-button') and contains(@class, 'editor-post-publish-button') and contains(@class, 'editor-post-publish-button__button') and contains(@class, 'is-primary')]", page);
+        if (saveButton) {
+          console.log("Button variant 4 found!");
+        }else if (!saveButton){
+          console.log("Button 4 not found!");
+        }
       }
     }else{
       console.log("WTF??!");
