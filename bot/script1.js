@@ -31,6 +31,20 @@ async function RestartLog(firstUrlIndex, lastUrlIndex){
     console.log('Saved!');
 });
 }
+function parseSpintax(spintax) {
+  var match, result = spintax, regex = /\{([^{}]*)\}/;
+
+  while (match = regex.exec(result)) {
+      var choices = match[1].split("|");
+      result = result.replace(match[0], choices[Math.floor(Math.random() * choices.length)]);
+  }
+
+  return result;
+}
+
+function countCharacters(text) {
+  return text.length;
+}
 async function main(){
   
   
