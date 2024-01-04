@@ -2,18 +2,10 @@ import "dotenv/config";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
-import fetchSheetData2D from "../libs/fetchSheetData.js";
-import openNewPage from "../libs/openNewPage.js";
-import selectXpath from "../libs/selectXpath.js";
-import clickElement from "../libs/clickElement.js";
-import delay from "../libs/delay.js";
-import openBrowser from "../libs/openBrowser.js";
 import fs from "fs";
 import path from "path";
-import selectXpathNoWait from "../libs/selectXpathNoWait.js";
-import wpSubmit from "../libs/wpSubmit.js";
-import clickEditWP from "../libs/clickEditWP.js";
-let index;
+import { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP, focusMetaDescriptionBox, getCurrentProgressBarValue, crashLog } from '../libs/1WP-functions.js';
+let index = 0;
 let end;
 
 async function RestartLog(firstUrlIndex, lastUrlIndex){
@@ -50,15 +42,16 @@ function countCharacters(text) {
 async function main(){
   
   
-  process.on('SIGINT', async function() {
-    await RestartLog(index, end);
-    console.log("Program terminated - log file created.");
-    // Gracefully shut down anything else you need to here
-    await delay(3000);
-    console.log("delayed successfully!  Terminating.");
-    process.exit(); // This will terminate the application
+//   process.on('SIGINT', async function() {
+//     await RestartLog(index, end);
+//     console.log("Program terminated - log file created.");
+//     // Gracefully shut down anything else you need to here
+//     await delay(3000);
+//     console.log("delayed successfully!  Terminating.");
+//     process.exit(); // This will terminate the application
   
-});
+// });
+
 
 async function Pagenation(){
   const spreadsheetId = '1AjhMb9FV2puTMoPXQtNfdB2QD__j3pTWnpYgJCcU55o'; // Your Spreadsheet ID
@@ -79,23 +72,18 @@ async function Pagenation(){
   end = parseInt(process.argv[3], 10);
   console.log(start, end);
   //await delay(60000);
+  index = 0;
+  crashLog(index, end);
   const browser = await openBrowser();
   for (let i = start; i < end; i++){
   index = i;
+  
   console.log("Opening url: ", urls[i], i);
   console.log("charCount: ", charCount[i]);
   const page = await openNewPage(urls[i], browser);
-  // const editButton = await selectXpath("//li[@id='wp-admin-bar-edit']/a", page);
-  // const navigationPromise1 = page.waitForNavigation({timeout: 300000, waitUntil: 'domcontentloaded'});
-  // await clickElement(editButton);
-  // await navigationPromise1;
-  // console.log("loaded");
-  await clickEditWP(urls[i], page);
-  const metaDescriptionBox = await selectXpath("//div[@id='yoast-google-preview-description-metabox']", page);
-  await metaDescriptionBox.focus();
-  const progressBar = await selectXpath("//progress[@max='156']", page);
-  let valueProgressBarString = await page.evaluate(el => el.getAttribute('value'), progressBar);
-  const valueProgressBar = parseInt(valueProgressBarString, 10);
+  await clickEditWP(page);
+  await focusMetaDescriptionBox(page);
+  let valueProgressBar = await getCurrentProgressBarValue(page);
   let textInput = "";
   if (charCount[i] < 51 && charCount[i] > 0){
     textInput = "%%title%% в онлайн магазин %%sitename%%   Поръчайте със 100% дискретна експресна доставка. Въображението ви е границата! ❤️ %%page%%"
@@ -105,6 +93,10 @@ async function Pagenation(){
     textInput = "%%title%% в онлайн магазин %%sitename%%   100% дискретна доставка. ❤️%%page%%"
   }else{console.log("error")};
   
+  let proofModifiedScript = selectXpathNoWait("//div[@id='yoast-google-preview-description-metabox' and @contenteditable='true']//span[@data-text='true' and contains(text(), 'Страница')]", page);
+  if (proofModifiedScript){
+    console.log("needs to be modified");
+  }
   if(valueProgressBar >= 120 && valueProgressBar <= 156 || urls[i].includes("/page/")){
     
     console.log(`Progress bar: ${valueProgressBar} with page: ${urls[i].includes("/page/")}`);
@@ -135,9 +127,8 @@ async function Pagenation(){
 
   await delay(4000);
   
-  //await navigationPromise;
+  //await navigationPromise; - ако искам да изчаква при fail
   await page.close();
-  
   console.log(`${urls[i]} modified successfully!`);
   }
 }
