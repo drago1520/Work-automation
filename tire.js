@@ -47,6 +47,10 @@ function transliterateBulgarian(str) {
       return transliterationMap[char] || char;
   }).join('');
 }
-
-
+function processText() {
+  let inputText = document.getElementById('inputText').value;
+  let transliteratedText = transliterateBulgarian(inputText);
+  let hyphenatedText = replaceSpacesWithHyphens(transliteratedText);
+  document.getElementById('outputText').innerText = hyphenatedText;
+}
 
