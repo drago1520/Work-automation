@@ -4,7 +4,7 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 import fs from "fs";
 import path from "path";
-import { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP, focusMetaDescriptionBox, getCurrentProgressBarValue, crashLog } from '../libs/1WP-functions.js';
+import { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP, focusMetaDescriptionBox, getCurrentProgressBarValue, crashLog, parseSpintax } from '../libs/1WP-functions.js';
 let index = 0;
 let end;
 
@@ -24,16 +24,16 @@ async function RestartLog(firstUrlIndex, lastUrlIndex){
     console.log('Saved!');
 });
 }
-function parseSpintax(spintax) {
-  var match, result = spintax, regex = /\{([^{}]*)\}/;
+// function parseSpintax(spintax) {
+//   var match, result = spintax, regex = /\{([^{}]*)\}/;
 
-  while (match = regex.exec(result)) {
-      var choices = match[1].split("|");
-      result = result.replace(match[0], choices[Math.floor(Math.random() * choices.length)]);
-  }
+//   while (match = regex.exec(result)) {
+//       var choices = match[1].split("|");
+//       result = result.replace(match[0], choices[Math.floor(Math.random() * choices.length)]);
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
 function countCharacters(text) {
   return text.length;
@@ -54,7 +54,7 @@ async function main(){
 
 
 async function Pagenation(){
-  const spreadsheetId = '1AjhMb9FV2puTMoPXQtNfdB2QD__j3pTWnpYgJCcU55o'; // Your Spreadsheet ID
+  const spreadsheetId = '1iX4ZStOJfq3VhODs2YSrjgUHtHem92TBHRBvzO5N7Z0'; // Your Spreadsheet ID
   const sheetData = await fetchSheetData2D(spreadsheetId);
   let urls = [];
   let charCount = [];
@@ -99,7 +99,7 @@ async function Pagenation(){
   //Checks if it already has the old shitty meta descr.
   let proofModifiedScript = await selectXpathNoWait("//div[@id='yoast-google-preview-description-metabox' and @contenteditable='true']//span[@data-text='true' and contains(text(), 'Страница')]", page);
   if (proofModifiedScript){
-    fs.appendFileSync("./modified.txt", `${urls[i]}\n`, function (err) {
+    fs.appendFileSync("./modified.txt", `${urls[i]} is already modified\n`, function (err) {
       console.log(err);
     });
     await focusMetaDescriptionBox(page);

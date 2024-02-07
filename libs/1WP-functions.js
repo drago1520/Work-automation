@@ -48,9 +48,19 @@ async function wpSubmit(page){
   await navigationPromise;
 
 }
+function parseSpintax(spintax) {
+  var match, result = spintax, regex = /\{([^{}]*)\}/;
+
+  while (match = regex.exec(result)) {
+      var choices = match[1].split("|");
+      result = result.replace(match[0], choices[Math.floor(Math.random() * choices.length)]);
+  }
+
+  return result;
+}
 async function fetchSheetData2D(spreadSheetID) {
   const spreadsheetId = spreadSheetID;
-  const sheetName = 'Sheet1';
+  const sheetName = 'Sheet2';
   const SheetsAPIFacebook = process.env.GOOGLE_SHEET_API_FACEBOOK;
   const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}?key=${SheetsAPIFacebook}`;
   let response = [];
@@ -117,7 +127,7 @@ async function loadCoockies(pathToCookies, page){
 }
 async function openBrowser(){
   try{
-    const browser = await puppeteer.launch({headless: false});
+    const browser = await puppeteer.launch({headless: "new"});
     
     return browser;
   }catch(e){
@@ -174,4 +184,4 @@ async function crashLog(index, end){
 }
 
 // Single-line export statement
-export { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP, focusMetaDescriptionBox, getCurrentProgressBarValue, crashLog };
+export { wpSubmit, fetchSheetData2D, selectXpathNoWait, selectXpath, openNewPage, loadCoockies, openBrowser, delay, closePage, clickElement, clickEditWP, focusMetaDescriptionBox, getCurrentProgressBarValue, crashLog, parseSpintax };

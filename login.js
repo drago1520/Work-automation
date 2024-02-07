@@ -18,8 +18,8 @@ async function main(){
   async function openNewPage(url, browser){
     try{
       const page = await browser.newPage();
-      await loadCoockies("./cookies.json", page);
-      await page.goto(url, { waitUntil: 'load' });
+     // await loadCoockies("./cookies.json", page);
+      await page.goto(url, { waitUntil: 'networkidle2' });
 
       //LOAD COOCKIES
       
